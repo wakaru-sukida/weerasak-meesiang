@@ -510,7 +510,20 @@ class Component extends DCLogic {
     },
   };
 
-  state = { lang:'th', view:'about', cat:'all', selectedId:null, projects: Component.SAMPLE, source:'sample', loading:false, error:'', aboutData:null, sort:'date', booting:true, dark:false, accent:'#3f8f64', paletteOpen:false, pdfBusy:false, vw: (typeof window !== 'undefined' ? window.innerWidth : 1200) };
+  static THEME_KEY = 'pf_theme';
+  static _theme() {
+    const def = { accent: '#3f8f64', dark: false };
+    try {
+      const ok = ['#3f8f64','#3076b5','#7a5bd1','#c2603a','#bf4d86'];
+      const s = JSON.parse((typeof localStorage !== 'undefined' && localStorage.getItem(Component.THEME_KEY)) || '{}');
+      return { accent: ok.indexOf(s.accent) >= 0 ? s.accent : def.accent, dark: !!s.dark };
+    } catch (e) { return def; }
+  }
+  _saveTheme(accent, dark) {
+    try { localStorage.setItem(Component.THEME_KEY, JSON.stringify({ accent, dark })); } catch (e) {}
+  }
+
+  state = { lang:'th', view:'about', cat:'all', selectedId:null, projects: Component.SAMPLE, source:'sample', loading:false, error:'', aboutData:null, sort:'date', booting:true, dark:Component._theme().dark, accent:Component._theme().accent, paletteOpen:false, pdfBusy:false, vw: (typeof window !== 'undefined' ? window.innerWidth : 1200) };
 
   componentDidMount() {
     this._boot();
@@ -1065,7 +1078,7 @@ class Component extends DCLogic {
     const P = dark
       ? { bg:_mix(accent,'#0b0e0c',.90), surface:_mix(accent,'#0b0e0c',.83), text:_dtext, muted:_mix(_dtext,'#0c100e',.32), dim:_mix(_dtext,'#0c100e',.5), border:_mix(accent,'#0b0e0c',.70), chip:_mix(accent,'#0b0e0c',.80), accent:_mix(accent,'#ffffff',.42), accentStrong:_mix(accent,'#ffffff',.58), accentWeak:_mix(accent,'#0b0e0c',.78), accentLine:_mix(accent,'#0b0e0c',.62), onAccent:_mix(accent,'#0a0d0a',.55) }
       : { bg:_mix(accent,'#ffffff',.90), surface:_mix(accent,'#ffffff',.975), text:_ltext, muted:_mix(_ltext,'#ffffff',.38), dim:_mix(_ltext,'#ffffff',.6), border:_mix(accent,'#ffffff',.80), chip:_mix(accent,'#ffffff',.88), accent:accent, accentStrong:_mix(accent,'#000000',.22), accentWeak:_mix(accent,'#ffffff',.86), accentLine:_mix(accent,'#ffffff',.74), onAccent:'#ffffff' };
-    const swatches = ACCENTS.map(c => ({ color:c, active:accent===c, inactive:accent!==c, pick:()=>this.setState({accent:c, paletteOpen:false}) }));
+    const swatches = ACCENTS.map(c => ({ color:c, active:accent===c, inactive:accent!==c, pick:()=>{ this._saveTheme(c, this.state.dark); this.setState({accent:c, paletteOpen:false}); } }));
     const themeVars = '--bg:'+P.bg+';--surface:'+P.surface+';--text:'+P.text+';--muted:'+P.muted+';--dim:'+P.dim+';--border:'+P.border+';--chip:'+P.chip+';--accent:'+P.accent+';--accent-strong:'+P.accentStrong+';--accent-weak:'+P.accentWeak+';--accent-line:'+P.accentLine+';--on-accent:'+P.onAccent+';';
     const _isAbout = this.state.view === 'about';
     const _catC = on => ({ bg:on?P.accent:P.surface, bd:on?P.accent:P.border, fg:on?P.onAccent:P.muted });
@@ -1124,7 +1137,7 @@ class Component extends DCLogic {
       togglePalette: () => this.setState({ paletteOpen: !this.state.paletteOpen }),
       closePalette: () => this.setState({ paletteOpen: false }),
       paletteLabel: isTh ? 'โทนสีของระบบ' : 'System color',
-      toggleDark: () => this.setState({ dark: !this.state.dark }),
+      toggleDark: () => { const d = !this.state.dark; this._saveTheme(this.state.accent, d); this.setState({ dark: d }); },
       darkBtnStyle: darkBtnStyle,
       darkGlyph: darkGlyph,
       darkTitle: dark ? (isTh ? 'โหมดสว่าง' : 'Light mode') : (isTh ? 'โหมดมืด' : 'Dark mode'),
