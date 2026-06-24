@@ -43,7 +43,7 @@
           <button onClick="{{ togglePalette }}" title="{{ paletteLabel }}" style="width:34px;height:34px;border-radius:8px;cursor:pointer;padding:0;background:var(--accent);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border)"></button>
           <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
             <div onClick="{{ closePalette }}" style="position:fixed;inset:0;z-index:60"></div>
-            <div style="position:absolute;top:44px;right:0;z-index:61;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.18);padding:16px 16px 14px">
+            <div style="position:absolute;top:44px;{{ palettePos }};z-index:61;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.18);padding:16px 16px 14px">
               <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;white-space:nowrap">{{ paletteLabel }}</div>
               <div style="display:flex;gap:10px">
                 <sc-for list="{{ swatches }}" as="sw" hint-placeholder-count="5">
@@ -1134,6 +1134,7 @@ class Component extends DCLogic {
       themeVars: themeVars,
       swatches: swatches,
       paletteOpen: !!this.state.paletteOpen,
+      palettePos: isMobile ? 'left:0' : 'right:0',
       togglePalette: () => this.setState({ paletteOpen: !this.state.paletteOpen }),
       closePalette: () => this.setState({ paletteOpen: false }),
       paletteLabel: isTh ? 'โทนสีของระบบ' : 'System color',
