@@ -4,7 +4,7 @@
 
 A bilingual (TH/EN) personal portfolio web app that pulls project and résumé data **live from a Google Sheet** — edit the sheet and the site updates instantly, no redeploy needed.
 
-**🔗 Live demo:** https://wakaru-sukida.github.io/portfolio/
+**🔗 Live demo:** https://wakaru-sukida.github.io/weerasak-meesiang/
 
 ---
 
